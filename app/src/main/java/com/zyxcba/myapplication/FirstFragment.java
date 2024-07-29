@@ -39,11 +39,6 @@ public class FirstFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-//        binding.buttonFirst.setOnClickListener(v ->
-//                NavHostFragment.findNavController(FirstFragment.this)
-//                        .navigate(R.id.action_FirstFragment_to_SecondFragment)
-//        );
-
         AnalysisAAABBB.init(getContext());
         AnalysisAAABBB.start("appidaaabbbccc", "channelaaabbbccc");
 
@@ -66,7 +61,7 @@ public class FirstFragment extends Fragment {
         TextView version_title = version.findViewById(R.id.title);
         version_title.setText("系统版本");
         TextView version_value = version.findViewById(R.id.value);
-        version_value.setText(Build.VERSION.RELEASE + "." + Build.VERSION.INCREMENTAL);
+        version_value.setText(Build.VERSION.RELEASE);
         version.findViewById(R.id.copy).setOnClickListener(new CopyButtonClickListener(getContext(), version_value));
 
 
