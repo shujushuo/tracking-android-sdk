@@ -1,0 +1,35 @@
+plugins {
+    alias(libs.plugins.androidLibrary)
+}
+
+android {
+    namespace 'com.zyxcba.mylibrary'
+    compileSdk 34
+
+    defaultConfig {
+        minSdk 26
+
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation libs.appcompat
+    implementation libs.material
+    implementation libs.play.services.ads.identifier
+    implementation(libs.android.cn.oaid) {
+        exclude group: 'com.huawei.hms', module: 'ads-identifier'
+        exclude group: 'com.hihonor.mcs', module: 'ads-identifier'
+    }
+}
