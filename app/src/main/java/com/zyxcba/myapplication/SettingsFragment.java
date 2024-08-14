@@ -9,20 +9,18 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
 
-import com.zyxcba.myapplication.databinding.FragmentFirstBinding;
+import com.zyxcba.myapplication.databinding.SettingsFragmentBinding;
 import com.zyxcba.mylibrary.AnalysisAAABBB;
 
-public class FirstFragment extends Fragment {
+public class SettingsFragment extends Fragment {
 
-    private FragmentFirstBinding binding;
+    private SettingsFragmentBinding binding;
 
     @Override
     public View onCreateView(
@@ -30,7 +28,7 @@ public class FirstFragment extends Fragment {
             Bundle savedInstanceState
     ) {
 
-        binding = FragmentFirstBinding.inflate(inflater, container, false);
+        binding = SettingsFragmentBinding.inflate(inflater, container, false);
         return binding.getRoot();
 
     }

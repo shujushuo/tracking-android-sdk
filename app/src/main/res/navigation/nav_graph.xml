@@ -3,11 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/FirstFragment">
+    app:startDestination="@id/SecondFragment">
 
     <fragment
-        android:id="@+id/FirstFragment"
-        android:name="com.zyxcba.myapplication.FirstFragment"
+        android:id="@+id/SettingsFragment"
+        android:name="com.zyxcba.myapplication.SettingsFragment"
         android:label="@string/first_fragment_label"
-        tools:layout="@layout/fragment_first"/>
+        tools:layout="@layout/settings_fragment"/>
+
+    <fragment
+        android:id="@+id/SecondFragment"
+        android:name="com.zyxcba.myapplication.TrackFragment"
+        android:label="@string/second_fragment_label"
+        tools:layout="@layout/track_fragment"/>
 </navigation>

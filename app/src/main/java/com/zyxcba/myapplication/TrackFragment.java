@@ -7,13 +7,12 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
 
-import com.zyxcba.myapplication.databinding.FragmentSecondBinding;
+import com.zyxcba.myapplication.databinding.TrackFragmentBinding;
 
-public class SecondFragment extends Fragment {
+public class TrackFragment extends Fragment {
 
-    private FragmentSecondBinding binding;
+    private TrackFragmentBinding binding;
 
     @Override
     public View onCreateView(
@@ -21,7 +20,7 @@ public class SecondFragment extends Fragment {
             Bundle savedInstanceState
     ) {
 
-        binding = FragmentSecondBinding.inflate(inflater, container, false);
+        binding = TrackFragmentBinding.inflate(inflater, container, false);
         return binding.getRoot();
 
     }

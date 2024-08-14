@@ -54,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
+            navController.navigate(R.id.SettingsFragment);
             return true;
         }
 
