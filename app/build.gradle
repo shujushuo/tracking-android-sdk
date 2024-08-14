@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.zyxcba.myapplication'
+    namespace 'com.shujushuo.app'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.zyxcba.myapplication"
+        applicationId "com.shujushuo.app"
         minSdk 26
         targetSdk 34
         versionCode 1

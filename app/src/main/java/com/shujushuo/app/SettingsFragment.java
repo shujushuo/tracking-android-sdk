@@ -1,4 +1,4 @@
-package com.zyxcba.myapplication;
+package com.shujushuo.app;
 
 import android.annotation.SuppressLint;
 import android.content.ClipData;
@@ -15,22 +15,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.zyxcba.myapplication.databinding.SettingsFragmentBinding;
-import com.zyxcba.mylibrary.AnalysisAAABBB;
-
 public class SettingsFragment extends Fragment {
-
-    private SettingsFragmentBinding binding;
 
     @Override
     public View onCreateView(
             @NonNull LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
-
-        binding = SettingsFragmentBinding.inflate(inflater, container, false);
-        return binding.getRoot();
-
+        return inflater.inflate(R.layout.fragment_settings, container, false);
     }
 
     @SuppressLint("SetTextI18n")
@@ -84,7 +76,6 @@ public class SettingsFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        binding = null;
     }
 
     static class CopyButtonClickListener implements View.OnClickListener {

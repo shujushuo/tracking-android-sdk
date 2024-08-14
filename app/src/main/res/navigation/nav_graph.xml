@@ -7,13 +7,13 @@
 
     <fragment
         android:id="@+id/SettingsFragment"
-        android:name="com.zyxcba.myapplication.SettingsFragment"
+        android:name="com.shujushuo.app.SettingsFragment"
         android:label="@string/first_fragment_label"
-        tools:layout="@layout/settings_fragment"/>
+        tools:layout="@layout/fragment_settings"/>
 
     <fragment
         android:id="@+id/SecondFragment"
-        android:name="com.zyxcba.myapplication.TrackFragment"
+        android:name="com.shujushuo.app.TrackFragment"
         android:label="@string/second_fragment_label"
-        tools:layout="@layout/track_fragment"/>
+        tools:layout="@layout/fragment_track"/>
 </navigation>

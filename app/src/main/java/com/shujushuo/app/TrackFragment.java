@@ -1,4 +1,4 @@
-package com.zyxcba.myapplication;
+package com.shujushuo.app;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -8,11 +8,11 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.zyxcba.myapplication.databinding.TrackFragmentBinding;
+import com.shujushuo.app.databinding.FragmentTrackBinding;
 
 public class TrackFragment extends Fragment {
 
-    private TrackFragmentBinding binding;
+    private FragmentTrackBinding binding;
 
     @Override
     public View onCreateView(
@@ -20,8 +20,10 @@ public class TrackFragment extends Fragment {
             Bundle savedInstanceState
     ) {
 
-        binding = TrackFragmentBinding.inflate(inflater, container, false);
+        binding = FragmentTrackBinding.inflate(inflater, container, false);
         return binding.getRoot();
+//        return inflater.inflate(R.layout.fragment_track, container, false);
+
 
     }
 
