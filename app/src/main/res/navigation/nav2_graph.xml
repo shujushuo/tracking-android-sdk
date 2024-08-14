@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav2_graph"
+    app:startDestination="@id/navigation_track">
+
+    <fragment
+        android:id="@+id/navigation_track"
+        android:name="com.zyxcba.myapplication.TrackFragment"
+        android:label="@string/title_track"
+        tools:layout="@layout/track_fragment" />
+    <fragment
+        android:id="@+id/navigation_settings"
+        android:name="com.zyxcba.myapplication.SettingsFragment"
+        android:label="@string/title_settings"
+        tools:layout="@layout/settings_fragment" />
+
+</navigation>
