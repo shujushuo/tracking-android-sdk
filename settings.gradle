@@ -17,6 +17,8 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven { url 'https://jitpack.io' }
+        maven { url 'https://developer.huawei.com/repo/' }  // 添加华为的仓库
+        maven { url 'https://developer.hihonor.com/repo' }  // 添加荣耀的仓库
     }
 }
 

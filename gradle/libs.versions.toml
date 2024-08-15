@@ -1,4 +1,6 @@
 [versions]
+adsIdentifier = "3.4.62.300"
+adsIdentifierVersion = "1.0.2.301"
 agp = "8.3.0"
 android_cn_oaid = "4.2.8"
 junit = "4.13.2"
@@ -12,10 +14,12 @@ navigationUi = "2.7.7"
 playServicesAdsIdentifier = "18.1.0"
 
 [libraries]
+ads-identifier = { module = "com.huawei.hms:ads-identifier", version.ref = "adsIdentifier" }
 android_cn_oaid = { module = "com.github.gzu-liyujiang:Android_CN_OAID", version.ref = "android_cn_oaid" }
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+mcs-ads-identifier = { module = "com.hihonor.mcs:ads-identifier", version.ref = "adsIdentifierVersion" }
 navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
 navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigationUi" }
 play-services-ads-identifier = { group = "com.google.android.gms", name = "play-services-ads-identifier", version.ref = "playServicesAdsIdentifier" }

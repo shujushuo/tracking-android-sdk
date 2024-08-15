@@ -31,12 +31,12 @@ android {
 }
 
 dependencies {
-
     implementation libs.appcompat
     implementation libs.material
     implementation libs.constraintlayout
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
     implementation project(':tracking-sdk')
-
+    implementation libs.ads.identifier //华为
+    implementation libs.mcs.ads.identifier //荣耀
 }
