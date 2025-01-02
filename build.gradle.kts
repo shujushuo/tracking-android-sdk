@@ -1,8 +1,18 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
-    alias(libs.plugins.androidApplication) apply false
-    alias(libs.plugins.jetbrainsKotlinAndroid) apply false
-    alias(libs.plugins.androidLibrary) apply false
-    alias(libs.plugins.jetbrainsKotlinKapt) // Kotlin Kapt 插件
 
+
+}
+
+afterEvaluate {
+//publishing {
+//    publications {
+//        create<MavenPublication>("release") {
+//            from(components["release"])
+//            groupId = "com.shujushuo.tracking"
+//            artifactId = "sdk"
+//            version = "0.2"
+//        }
+//    }
+//}
 }

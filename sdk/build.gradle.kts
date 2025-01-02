@@ -17,7 +17,7 @@ android {
     }
 
     buildTypes {
-        release {
+        getByName("release") {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -65,11 +65,11 @@ dependencies {
     // OAID
     implementation(libs.oaid)
 }
-
+//
 publishing {
     publications {
         create<MavenPublication>("release") {
-            from(components["release"])
+//            from(components["release"])
             groupId = "com.shujushuo.tracking"
             artifactId = "sdk"
             version = "0.2"

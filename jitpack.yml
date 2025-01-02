@@ -2,12 +2,15 @@ jdk: openjdk17
 
 build:
   before_install:
-    - echo "Before setting JAVA_HOME"
-#    - java -version
-#    - export JAVA_HOME=/home/jitpack/tools/jdk17
-#    - export PATH=$JAVA_HOME/bin:$PATH
-#    - echo "After setting JAVA_HOME"
+    # 设置 JAVA_HOME 和 PATH
+    - export JAVA_HOME=/home/jitpack/tools/jdk17
+    - export PATH=$JAVA_HOME/bin:$PATH
+    - echo "JAVA_HOME set to $JAVA_HOME"
     - java -version
 
+    # 停止任何正在运行的 Gradle Daemon，以防止使用旧的 Java 版本
+    - ./gradlew --stop
+
   install:
-    - ./gradlew :sdk:assembleRelease --no-daemon
+    # 构建并发布 sdk 模块
+    - ./gradlew :sdk:publishToMavenLocal --no-daemon
