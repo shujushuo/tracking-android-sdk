@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- 允许所有域名的明文流量（仅限开发阶段，生产环境请谨慎使用） -->
+    <base-config cleartextTrafficPermitted="true" />
+
+    <!-- 或者，针对特定域名允许明文流量 -->
+    <!--
+    <domain-config cleartextTrafficPermitted="true">
+        <domain>10.0.2.2</domain>
+    </domain-config>
+    -->
+</network-security-config>
