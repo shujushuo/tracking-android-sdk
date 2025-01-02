@@ -71,7 +71,7 @@ publishing {
         create<MavenPublication>("release") {
             from(components["release"])
             groupId = "com.shujushuo.tracking"
-            artifactId = "tracking-android-sdk"
+            artifactId = "sdk"
             version = "0.2"
         }
     }
