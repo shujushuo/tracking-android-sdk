@@ -3,14 +3,11 @@ jdk: openjdk17
 build:
   before_install:
     - echo "Before setting JAVA_HOME"
-    - java -version
-    - export JAVA_HOME=/home/jitpack/tools/jdk17
-    - export PATH=$JAVA_HOME/bin:$PATH
-    - echo "After setting JAVA_HOME"
+#    - java -version
+#    - export JAVA_HOME=/home/jitpack/tools/jdk17
+#    - export PATH=$JAVA_HOME/bin:$PATH
+#    - echo "After setting JAVA_HOME"
     - java -version
 
-    # 让 Gradle 不用缓存的 daemon（可避免已启动的 Java 8 daemon）
-    - ./gradlew --stop
-
-    # 再执行你的编译命令
+  install:
     - ./gradlew :sdk:assembleRelease --no-daemon
