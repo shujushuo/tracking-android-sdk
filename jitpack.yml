@@ -13,5 +13,5 @@ build:
 
   install:
     # 构建并发布 sdk 模块
-    - ./gradlew :sdk:assembleRelease
+    - ./gradlew :sdk:assembleRelease --no-daemon
     - ./gradlew :sdk:publishToMavenLocal --no-daemon

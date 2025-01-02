@@ -17,7 +17,7 @@ android {
     }
 
     buildTypes {
-        getByName("release") {
+        release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -26,11 +26,12 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11 // 使用 Java 11
+        targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11" // Kotlin JVM 目标版本
     }
 }
 
@@ -66,13 +67,46 @@ dependencies {
     implementation(libs.oaid)
 }
 //
-publishing {
-    publications {
-        create<MavenPublication>("release") {
-//            from(components["release"])
-            groupId = "com.shujushuo.tracking"
-            artifactId = "sdk"
-            version = "0.2"
+afterEvaluate {
+    println("Available components: ${components.names}")
+
+    publishing {
+        publications {
+            create<MavenPublication>("release") {
+                from(components["release"]) // 引用 'release' 组件
+                groupId = "com.shujushuo.tracking" // 你的 groupId
+                artifactId = "tracking-android-sdk" // 你的 artifactId
+                version = "0.2" // 版本号
+
+                pom {
+                    name.set("Tracking Android SDK")
+                    description.set("A tracking library for Android applications.")
+                    url.set("https://github.com/shujushuo/tracking-android-sdk")
+                    licenses {
+                        license {
+                            name.set("The Apache License, Version 2.0")
+                            url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                        }
+                    }
+                    developers {
+                        developer {
+                            id.set("shujushuo")
+                            name.set("Shu Jushuo")
+                            email.set("jiangzhx@gmail.com")
+                        }
+                    }
+                    scm {
+                        connection.set("scm:git:git://github.com/shujushuo/tracking-android-sdk.git")
+                        developerConnection.set("scm:git:ssh://github.com/shujushuo/tracking-android-sdk.git")
+                        url.set("https://github.com/shujushuo/tracking-android-sdk")
+                    }
+                }
+            }
         }
+    }
+
+    // 确保 publishToMavenLocal 任务依赖 assembleRelease
+    tasks.named("publishToMavenLocal").configure {
+        dependsOn("assembleRelease")
     }
 }
