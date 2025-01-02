@@ -1,2 +1,9 @@
-jdk:
-  - openjdk17
+jdk: openjdk17
+
+build:
+  # 先让它构建 :sdk:assembleRelease
+  before_install:
+    - ./gradlew :sdk:assembleRelease
+  # 如果使用 maven-publish，需要执行 publishToMavenLocal/publish
+  after_success:
+    - ./gradlew :sdk:publishToMavenLocal
