@@ -6,5 +6,5 @@ import retrofit2.http.POST
 
 interface ApiService {
     @POST("up")
-    suspend fun uploadEvent(@Body event: EventEntity): Response<Unit>
+    suspend fun uploadEvent(@Body event: EventEntity): Response<String>
 }

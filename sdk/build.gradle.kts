@@ -2,16 +2,25 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.jetbrainsKotlinKapt)
+//    alias(libs.plugins.kotlinSerialization)
     id("maven-publish")
 }
 
 android {
     namespace = "com.shujushuo.tracking.sdk"
-    compileSdk = 34
+    compileSdk = 35
+
+    buildFeatures {
+        buildConfig = true
+    }
 
     defaultConfig {
         minSdk = 24
+        // 手动定义版本号
+        val sdkVersion = "0.2"
 
+        // 将版本号添加到 BuildConfig
+        buildConfigField("String", "SDK_VERSION", "\"$sdkVersion\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
@@ -65,6 +74,8 @@ dependencies {
 
     // OAID
     implementation(libs.oaid)
+
+//    implementation(libs.kotlinx.serialization.json)
 }
 //
 afterEvaluate {

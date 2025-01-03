@@ -18,9 +18,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        TrackingSdk.initialize(application, SdkConfig("http://10.1.64.179:8090/", "APPID"))
+        TrackingSdk.initialize(
+            application,
+            SdkConfig("http://10.1.64.179:8090/", "APPID", "100030")
+        )
         TrackingSdk.setLoggingEnabled(true)
-        TrackingSdk.trackEvent("custom_event", this, 3)
+        TrackingSdk.trackEvent(
+            "custom_event", "example_xwho",
+            delayMs = 3
+        )
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 

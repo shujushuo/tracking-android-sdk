@@ -6,6 +6,7 @@ import android.provider.Settings
 import android.util.Log
 import com.github.gzuliyujiang.oaid.DeviceIdentifier
 import com.github.gzuliyujiang.oaid.DeviceID
+import com.shujushuo.tracking.sdk.TrackingSdk.log
 import java.util.UUID
 
 class DeviceInfoManager() {
@@ -24,13 +25,14 @@ class DeviceInfoManager() {
      * 获取 Android ID，并缓存
      */
     @SuppressLint("HardwareIds")
-    fun getAndroidId(context: Context): String {
+    fun getAndroidId(context: Context): String? {
 
         var androidId = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             .getString(KEY_ANDROID_ID, null)
         if (androidId == null) {
             androidId =
-                Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID) ?: ""
+                Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+                    ?: null
             context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit()
                 .putString(KEY_ANDROID_ID, androidId).apply()
         }
@@ -47,7 +49,7 @@ class DeviceInfoManager() {
             if (DeviceID.supportedOAID(context)) {
                 oaid = DeviceIdentifier.getOAID(context)
             } else {
-                Log.e("DeviceInfoManager", "获取 OAID 失败")
+                log("获取 OAID 失败")
             }
 
             if (oaid != null) {
@@ -70,7 +72,7 @@ class DeviceInfoManager() {
             val oaid = getOAID(context)
             val androidId = getAndroidId(context)
             val identifier =
-                oaid ?: (androidId.ifEmpty { UUID.randomUUID().toString() })
+                oaid ?: (androidId?.ifEmpty { UUID.randomUUID().toString() })
             installId = "${timestamp}_$identifier"
             context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit()
                 .putString(KEY_INSTALL_ID, installId).apply()

@@ -1,19 +1,20 @@
 package com.shujushuo.tracking.sdk
 
-import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import android.provider.Settings
 import com.github.gzuliyujiang.oaid.DeviceIdentifier
 import kotlinx.coroutines.delay
+import java.util.Locale
 import java.util.TimeZone
 
 object TrackingSdk {
 
+    private lateinit var application: Application
     private lateinit var repository: EventRepository
     private lateinit var deviceInfoManager: DeviceInfoManager
     private var appId: String = "APPID" // 可以在初始化时设置
@@ -26,6 +27,7 @@ object TrackingSdk {
      * @param config SDK 配置信息
      */
     fun initialize(app: Application, config: SdkConfig) {
+        this.application = app
         appId = config.appId
         channelId = config.channelId
         setBaseUrl(config.baseUrl)
@@ -35,7 +37,8 @@ object TrackingSdk {
 
         Scheduler.scheduleRetryFailedEvents(app.applicationContext)
         log("SDK 初始化完成，Base URL: ${config.baseUrl}, App ID: ${config.appId}")
-        this.trackInstallEvent(app.applicationContext)
+        this.trackInstall()
+        this.trackStartup(3)
     }
 
 
@@ -43,42 +46,81 @@ object TrackingSdk {
      * 上报安装事件
      * @param xcontext 事件上下文信息
      */
-    fun trackInstallEvent(context: Context) {
-        // 使用协程启动上传任务
-        CoroutineScope(Dispatchers.IO).launch {
-            val event = EventEntity(
-                appid = appId,
-                xwho = null, // 可以根据需求动态设置
-                xwhen = System.currentTimeMillis(),
-                xwhat = "install",
-                xcontext = createDefaultXContext(context)
-            )
-
-            log("上报安装事件: install")
-            repository.uploadEvent(event)
-        }
+    private fun trackInstall() {
+        this.trackEvent(
+            "install",
+        )
     }
 
-    /**
-     * 跟踪并上报自定义事件
-     * @param eventName 事件名称
-     */
-    fun trackEvent(eventName: String, context: Context, delayMs: Long = 0) {
+    private fun trackStartup(delayMs: Long = 0) {
+        this.trackEvent(
+            "startup",
+            delayMs = delayMs
+        )
+    }
 
+    fun trackLogin(delayMs: Long = 0) {
+        this.trackEvent(
+            "login",
+            delayMs = delayMs
+        )
+    }
+
+    fun trackPayment(
+        xwho: String,
+        transactionid: String,
+        paymenttype: String,
+        currencytype: CurrencyType,
+        currencyamount: Float,
+        paymentstatus: Boolean = true,
+        delayMs: Long = 0
+    ) {
+        val parameters = mapOf(
+            "transactionid" to transactionid,
+            "paymenttype" to paymenttype,
+            "currencytype" to currencytype,
+            "currencyamount" to currencyamount,
+            "paymentstatus" to paymentstatus
+        )
+        this.trackEvent(
+            "payment", xwho,
+            parameters = parameters,
+            delayMs = delayMs
+        )
+    }
+
+    fun trackRegister(xwho: String, delayMs: Long = 0) {
+        this.trackEvent(
+            "register", xwho,
+            delayMs = delayMs
+        )
+    }
+
+    fun trackEvent(
+        xwhat: String,
+        xwho: String? = null,
+        parameters: Map<String, Any?> = emptyMap(),
+        delayMs: Long = 0
+    ) {
         // 使用协程启动上传任务
         CoroutineScope(Dispatchers.IO).launch {
             if (delayMs > 0) {
                 delay(delayMs) // 延迟指定毫秒数
             }
 
+            val defaultXContext = createDefaultXContext(application.applicationContext)
+
+            val combinedXContext = defaultXContext + parameters
+
+
             val event = EventEntity(
                 appid = appId,
-                xwho = "example_xwho", // 可以根据需求动态设置
+                xwho = xwho, // 可以根据需求动态设置
                 xwhen = System.currentTimeMillis(),
-                xwhat = eventName,
-                xcontext = createDefaultXContext(context)
+                xwhat = xwhat,
+                xcontext = combinedXContext
             )
-            log("跟踪自定义事件: $eventName")
+            log("上报事件: $xwhat")
             repository.uploadEvent(event)
         }
     }
@@ -102,20 +144,12 @@ object TrackingSdk {
     }
 
     /**
-     * 获取 SDK 版本信息
-     * @return SDK 版本号
-     */
-    fun getSDKVersion(): String {
-        return "1.0.0" // 版本号可以根据实际情况更新
-    }
-
-    /**
      * 内部日志记录方法
      * @param message 日志信息
      */
-    private fun log(message: String) {
+    fun log(message: String) {
         if (loggingEnabled) {
-            android.util.Log.d("TrackingSdk", message)
+            Log.d("TrackingSdk", message)
         }
     }
 
@@ -123,20 +157,24 @@ object TrackingSdk {
      * 创建默认的 XContext
      * 这里可以根据实际情况填充默认值或从设备获取相关信息
      */
-    @SuppressLint("HardwareIds")
-    private suspend fun createDefaultXContext(context: Context): XContext {
-        return XContext(
-            os = "android",
-            osVersion = Build.VERSION.RELEASE,
-            platform = "android",
-            brand = Build.BRAND,
-            oaid = deviceInfoManager.getOAID(context),
-            androidId = deviceInfoManager.getAndroidId(context),
-            timezone = getTimeZoneOffset(),
-            installId = deviceInfoManager.getInstallId(context),
-            model = Build.MODEL,
-            channelId = this.channelId,
-            pkgName = context.packageName
+    private fun createDefaultXContext(context: Context): Map<String, Any?> {
+        val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+        val pkgVersion = packageInfo.versionName ?: "unknown"
+        val pkgName = packageInfo.packageName
+        return mapOf(
+            "os" to "android",
+            "os_version" to Build.VERSION.RELEASE,
+            "platform" to "android",
+            "brand" to Build.BRAND,
+            "model" to Build.MODEL,
+            "oaid" to deviceInfoManager.getOAID(context),
+            "androidid" to deviceInfoManager.getAndroidId(context),
+            "tz" to getTimeZoneOffset(),
+            "installid" to deviceInfoManager.getInstallId(context),
+            "channelid" to this.channelId,
+            "pkg_name" to pkgName,
+            "pkg_version" to pkgVersion,
+            "sdk_version" to BuildConfig.SDK_VERSION
         )
     }
 
@@ -145,6 +183,6 @@ object TrackingSdk {
         val offsetInMillis = timeZone.getOffset(System.currentTimeMillis())
         val hours = offsetInMillis / (1000 * 60 * 60)
         // 如果需要保留分钟偏移量，可以进行调整
-        return String.format("%+d", hours)
+        return String.format(Locale.getDefault(), "%+d", hours)
     }
 }

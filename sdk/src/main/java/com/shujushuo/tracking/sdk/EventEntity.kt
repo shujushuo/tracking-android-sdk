@@ -19,5 +19,5 @@ data class EventEntity(
     val xwhen: Long,
     @TypeConverters(XContextConverter::class)
     @Expose
-    val xcontext: XContext
+    val xcontext: Map<String, Any?> // 支持不同数据类型的 Map
 )

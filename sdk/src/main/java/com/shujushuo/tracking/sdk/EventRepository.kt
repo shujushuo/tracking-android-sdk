@@ -1,7 +1,7 @@
 package com.shujushuo.tracking.sdk
 
 import android.content.Context
-import android.util.Log
+import com.shujushuo.tracking.sdk.TrackingSdk.log
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
@@ -13,25 +13,19 @@ class EventRepository(context: Context) {
 
     suspend fun uploadEvent(event: EventEntity) {
         retryFailedEvents()
-        Log.d("TrackingSdk", "开始请求服务器")
+        log("开始请求服务器")
         try {
             val response = apiService.uploadEvent(event)
-            Log.d("TrackingSdk", "Response Code: ${response.code()}")
-            Log.d("TrackingSdk", "Response Message: ${response.message()}")
-            Log.d("TrackingSdk", "Response Body: ${response.body()}")
-            Log.d("TrackingSdk", "Response Error Body: ${response.errorBody()?.string()}")
+            log("Response Code: ${response.code()}")
+            log("Response Body: ${response.body()}")
             if (!response.isSuccessful) {
-                // 上传失败，保存到本地
-                Log.d("TrackingSdk", "上传失败，保存到本地")
-
+                log("上传失败，保存到本地")
                 saveEventLocally(event)
             } else {
-                Log.d("TrackingSdk", "上传成功")
+                log("上传成功")
             }
         } catch (e: Exception) {
-            Log.e("TrackingSdk", "上传事件失败: ${e.message}")
-            e.printStackTrace()
-            // 网络异常，保存到本地
+            log("上传事件失败: ${e.message}")
             saveEventLocally(event)
         }
     }
@@ -49,7 +43,7 @@ class EventRepository(context: Context) {
                     val response = apiService.uploadEvent(eventEntity)
                     if (response.isSuccessful) {
                         eventDao.deleteEventsByIds(listOf(eventEntity.id))
-                        Log.d("retryFailedEvents", "开始请求服务器")
+                        log("retryFailedEvents,开始请求服务器")
                         // 可以添加更多日志或成功处理
                     }
                 } catch (e: Exception) {
