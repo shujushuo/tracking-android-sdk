@@ -11,8 +11,9 @@ class EventRepository(context: Context) {
     private val apiService = RetrofitClient.apiService
     private val retryLock = Mutex()
 
-    suspend fun uploadEvent(event: EventEntity) {
-        retryFailedEvents()
+    suspend fun uploadEvent(event: EventEntity, retryHistory: Boolean = true) {
+        if (retryHistory)
+            retryFailedEvents()
         log("开始请求服务器")
         try {
             val response = apiService.uploadEvent(event)
@@ -40,11 +41,19 @@ class EventRepository(context: Context) {
             val failedEvents = eventDao.getAllEvents()
             for (eventEntity in failedEvents) {
                 try {
+                    log("retryFailedEvents,开始请求服务器")
+                    log("retryFailedEvents,$eventEntity")
                     val response = apiService.uploadEvent(eventEntity)
+                    log("retryFailedEvents Response Code: ${response.code()}")
+                    log("retryFailedEvents Response Body: ${response.body()}")
                     if (response.isSuccessful) {
                         eventDao.deleteEventsByIds(listOf(eventEntity.id))
-                        log("retryFailedEvents,开始请求服务器")
-                        // 可以添加更多日志或成功处理
+                    } else if (response.code() == 400) {
+                        // 如果code 等于400，说明上报的数据有问题。也应该清除本地数据
+                        log("retryFailedEvents,数据异常，删除本地数据")
+                        eventDao.deleteEventsByIds(listOf(eventEntity.id))
+                    } else {
+                        log("retryFailedEvents 上传失败")
                     }
                 } catch (e: Exception) {
                     // 仍然失败，保留在本地

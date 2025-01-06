@@ -42,4 +42,7 @@
         libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
         vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
     </string>
+    <string name="title_track">Home</string>
+    <string name="title_settings">Dashboard</string>
+    <string name="action_settings">设备ID</string>
 </resources>

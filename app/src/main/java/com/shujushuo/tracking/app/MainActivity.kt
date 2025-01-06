@@ -1,51 +1,46 @@
 package com.shujushuo.tracking.app
 
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import com.shujushuo.tracking.app.databinding.ActivityMainBinding
+import androidx.navigation.Navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.NavigationUI.navigateUp
+import androidx.navigation.ui.NavigationUI.setupWithNavController
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import androidx.navigation.ui.AppBarConfiguration.Builder
 import com.shujushuo.tracking.sdk.SdkConfig
 import com.shujushuo.tracking.sdk.TrackingSdk
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var appBarConfiguration: AppBarConfiguration
-    private lateinit var binding: ActivityMainBinding
-
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        TrackingSdk.initialize(
-            application,
-            SdkConfig("http://10.1.64.179:8090/", "APPID", "100030")
-        )
         TrackingSdk.setLoggingEnabled(true)
-        TrackingSdk.trackEvent(
-            "custom_event", "example_xwho",
-            delayMs = 3
-        )
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        //正常接入，应该使用这个方法。
+        //TrackingSdk.initialize(
+        //    this.application,
+        //    SdkConfig("http://10.1.64.179:8090", "APPID", "DEFAULT")
+        //)
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main) // 确保布局文件名正确
 
-        setSupportActionBar(binding.toolbar)
+        val navHostFragment =
+            checkNotNull(supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment?)
+        val navController = navHostFragment.navController
 
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        appBarConfiguration = AppBarConfiguration(navController.graph)
-        setupActionBarWithNavController(navController, appBarConfiguration)
-
-        binding.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null)
-                .setAnchorView(R.id.fab).show()
+        val navView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
+        if (navView == null) {
+            Log.e("MainActivity", "BottomNavigationView not found")
+        } else {
+            Log.i("MainActivity", "BottomNavigationView found")
         }
+        checkNotNull(navView)
+        setupWithNavController(navView, navController)
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        return navController.navigateUp(appBarConfiguration)
+        val navController = findNavController(this, R.id.nav_host_fragment)
+        return navigateUp(navController, Builder(navController.graph).build())
                 || super.onSupportNavigateUp()
     }
 }

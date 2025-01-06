@@ -16,9 +16,10 @@ object TrackingSdk {
 
     private lateinit var application: Application
     private lateinit var repository: EventRepository
-    private lateinit var deviceInfoManager: DeviceInfoManager
-    private var appId: String = "APPID" // 可以在初始化时设置
-    private var channelId: String = "default"
+    lateinit var deviceInfoManager: DeviceInfoManager
+    lateinit var appId: String
+    lateinit var channelId: String
+    lateinit var baseUrl: String
     private var loggingEnabled: Boolean = false
 
     /**
@@ -27,18 +28,31 @@ object TrackingSdk {
      * @param config SDK 配置信息
      */
     fun initialize(app: Application, config: SdkConfig) {
+        this.initializeWithoutDefaultEvent(app, config)
+        this.trackInstall()
+        this.trackStartup(3)
+    }
+
+    /**
+     * 初始化 SDK
+     * @param context 应用上下文
+     * @param config SDK 配置信息
+     */
+    fun initializeWithoutDefaultEvent(app: Application, config: SdkConfig) {
         this.application = app
         appId = config.appId
         channelId = config.channelId
-        setBaseUrl(config.baseUrl)
+        baseUrl = config.baseUrl
+        RetrofitClient.setBaseUrl(baseUrl)
+        log("上报地址已更新为: $baseUrl")
+
         repository = EventRepository(app.applicationContext)
         DeviceIdentifier.register(app)
         deviceInfoManager = DeviceInfoManager()
 
         Scheduler.scheduleRetryFailedEvents(app.applicationContext)
         log("SDK 初始化完成，Base URL: ${config.baseUrl}, App ID: ${config.appId}")
-        this.trackInstall()
-        this.trackStartup(3)
+
     }
 
 
@@ -46,22 +60,22 @@ object TrackingSdk {
      * 上报安装事件
      * @param xcontext 事件上下文信息
      */
-    private fun trackInstall() {
+    fun trackInstall() {
         this.trackEvent(
             "install",
         )
     }
 
-    private fun trackStartup(delayMs: Long = 0) {
+    fun trackStartup(delayMs: Long = 0) {
         this.trackEvent(
             "startup",
             delayMs = delayMs
         )
     }
 
-    fun trackLogin(delayMs: Long = 0) {
+    fun trackLogin(xwho: String, delayMs: Long = 0) {
         this.trackEvent(
-            "login",
+            "login", xwho,
             delayMs = delayMs
         )
     }
@@ -125,14 +139,6 @@ object TrackingSdk {
         }
     }
 
-    /**
-     * 动态设置上报地址
-     * @param url 上报服务器的 Base URL
-     */
-    private fun setBaseUrl(url: String) {
-        RetrofitClient.setBaseUrl(url)
-        log("上报地址已更新为: $url")
-    }
 
     /**
      * 启用或禁用 SDK 日志

@@ -11,6 +11,7 @@ object RetrofitClient {
 
     fun setBaseUrl(url: String) {
         baseUrl = url
+        resetApiService()
     }
 
     private val okHttpClient: OkHttpClient by lazy {
@@ -22,16 +23,28 @@ object RetrofitClient {
             .build()
     }
 
-    val apiService: ApiService by lazy {
+    @Volatile
+    private var _apiService: ApiService? = null
+
+    val apiService: ApiService
+        get() = _apiService ?: synchronized(this) {
+            _apiService ?: createApiService().also { _apiService = it }
+        }
+
+    private fun createApiService(): ApiService {
         val gson = GsonBuilder()
             .excludeFieldsWithoutExposeAnnotation() // 仅序列化带 @Expose 注解的字段
             .create()
 
-        Retrofit.Builder()
+        return Retrofit.Builder()
             .baseUrl(baseUrl)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
             .create(ApiService::class.java)
+    }
+
+    private fun resetApiService() {
+        _apiService = null
     }
 }
