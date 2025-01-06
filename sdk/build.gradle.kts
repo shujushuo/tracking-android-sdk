@@ -15,7 +15,7 @@ android {
     }
 
     defaultConfig {
-        minSdk = 24
+        minSdk = 22
         // 手动定义版本号
         val sdkVersion = "0.2"
 
