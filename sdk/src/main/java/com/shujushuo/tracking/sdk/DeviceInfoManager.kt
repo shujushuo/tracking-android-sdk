@@ -24,7 +24,6 @@ class DeviceInfoManager() {
     /**
      * 获取 Android ID，并缓存
      */
-    @SuppressLint("HardwareIds")
     fun getAndroidId(context: Context): String? {
 
         var androidId = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
