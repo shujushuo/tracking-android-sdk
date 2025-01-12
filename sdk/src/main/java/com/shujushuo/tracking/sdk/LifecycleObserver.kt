@@ -28,11 +28,4 @@ object LifecycleObserver : DefaultLifecycleObserver {
         TrackingSdk.log("onStop")
         TrackingSdk.flushAllEvent()
     }
-
-    override fun onPause(owner: LifecycleOwner) {
-        super.onPause(owner)
-        TrackingSdk.log("onPause")
-        TrackingSdk.flushAllEvent()
-
-    }
 }
