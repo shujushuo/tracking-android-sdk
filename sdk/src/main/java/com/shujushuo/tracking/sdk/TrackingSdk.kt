@@ -10,6 +10,8 @@ import kotlinx.coroutines.launch
 import com.github.gzuliyujiang.oaid.DeviceIdentifier
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.shujushuo.tracking.sdk.DeviceInfoManager.Companion.KEY_INSTALL_ID
+import com.shujushuo.tracking.sdk.DeviceInfoManager.Companion.PREFS_NAME
 import kotlinx.coroutines.delay
 import java.util.Locale
 import java.util.TimeZone
@@ -31,7 +33,15 @@ object TrackingSdk {
      */
     fun initialize(app: Application, config: SdkConfig) {
         this.initializeWithoutDefaultEvent(app, config)
-        this.trackInstall()
+        val installId = this.application.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getString(KEY_INSTALL_ID, null)
+        // 如果installid为null，证明是第一次安装，上报install
+        if (installId == null) {
+            log("第一次安装，上报install事件")
+            this.trackInstall()
+        } else {
+            log("非第一次安装，不上报install事件")
+        }
         this.trackStartup(3)
     }
 

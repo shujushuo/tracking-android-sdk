@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.jetbrainsKotlinKapt)
-//    alias(libs.plugins.kotlinSerialization)
     id("maven-publish")
 }
 
@@ -45,7 +44,7 @@ android {
 }
 
 dependencies {
-
+    implementation(libs.kezong.fat.aar)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -71,12 +70,12 @@ dependencies {
 
     // WorkManager 依赖
     implementation(libs.work.runtime.ktx)
-
+    implementation(libs.hms.ads.identifier) //华为
+    implementation("com.hihonor.mcs:ads-identifier:1.0.3.300") //荣耀
     // OAID
-    implementation(libs.oaid)
-
-//    implementation(libs.kotlinx.serialization.json)
+    api(libs.oaid)
 }
+
 //
 afterEvaluate {
     println("Available components: ${components.names}")
@@ -121,3 +120,4 @@ afterEvaluate {
         dependsOn("assembleRelease")
     }
 }
+

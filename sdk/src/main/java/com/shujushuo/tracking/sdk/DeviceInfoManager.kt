@@ -12,11 +12,10 @@ import java.util.UUID
 class DeviceInfoManager() {
 
     companion object {
-
-        private const val PREFS_NAME = "device_prefs"
-        private const val KEY_INSTALL_ID = "install_id"
-        private const val KEY_OAID = "oaid"
-        private const val KEY_ANDROID_ID = "android_id"
+        const val PREFS_NAME = "device_prefs"
+        const val KEY_INSTALL_ID = "install_id"
+        const val KEY_OAID = "oaid"
+        const val KEY_ANDROID_ID = "android_id"
     }
 
 //    private val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)

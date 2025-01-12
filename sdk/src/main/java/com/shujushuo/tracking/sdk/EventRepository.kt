@@ -18,11 +18,12 @@ class EventRepository(context: Context) {
         log("开始请求服务器")
         try {
             val response = apiService.uploadEvent(event)
-            log("Response Code: ${response.code()}")
-            log("Response Body: ${response.body()}")
-            if (!response.isSuccessful) {
+            log("Response Code: ${response.code()} Body: ${response.body()}")
+            if (response.code() !in 200..299) {
                 log("上传失败，保存到本地")
                 saveEventLocally(event)
+            } else if (response.code() in 300..499) {
+                log("上传失败，但因为数据参数错误，不保存到本地")
             } else {
                 log("上传成功")
             }

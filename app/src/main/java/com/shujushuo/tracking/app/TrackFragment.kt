@@ -46,12 +46,11 @@ class TrackFragment : Fragment() {
                 .putString("baseUrl", baseUrl.text.toString()).apply()
             requireContext().getSharedPreferences("sdk_config", Context.MODE_PRIVATE).edit()
                 .putString("channelid", channelid.text.toString()).apply()
-            TrackingSdk.initializeWithoutDefaultEvent(
+            TrackingSdk.initialize(
                 requireActivity().application,
                 SdkConfig(baseUrl.text.toString(), appid.text.toString(), channelid.text.toString())
             )
         }
-        view.findViewById<Button>(R.id.btn_initialize).performClick()
 
         view.findViewById<Button>(R.id.btn_install)
             .setOnClickListener(TrackButtonClickListener(requireContext(), "install"))

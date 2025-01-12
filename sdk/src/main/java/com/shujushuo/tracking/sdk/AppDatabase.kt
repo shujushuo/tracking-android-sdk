@@ -6,7 +6,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import android.content.Context
 
-@Database(entities = [EventEntity::class], version = 3)
+@Database(entities = [EventEntity::class], version = 3, exportSchema = false)
 @TypeConverters(XContextConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun eventDao(): EventDao
