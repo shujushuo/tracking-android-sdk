@@ -14,6 +14,7 @@ class EventRepository(context: Context) {
     suspend fun uploadEvent(event: EventEntity, retryHistory: Boolean = true) {
         if (retryHistory)
             retryFailedEvents()
+        log(event)
         log("开始请求服务器")
         try {
             val response = apiService.uploadEvent(event)
@@ -33,7 +34,6 @@ class EventRepository(context: Context) {
 
     private suspend fun saveEventLocally(event: EventEntity) {
         eventDao.insert(event)
-        // 可以添加更多日志或错误处理
     }
 
     suspend fun retryFailedEvents() {
@@ -42,10 +42,9 @@ class EventRepository(context: Context) {
             for (eventEntity in failedEvents) {
                 try {
                     log("retryFailedEvents,开始请求服务器")
-                    log("retryFailedEvents,$eventEntity")
+                    log(eventEntity)
                     val response = apiService.uploadEvent(eventEntity)
-                    log("retryFailedEvents Response Code: ${response.code()}")
-                    log("retryFailedEvents Response Body: ${response.body()}")
+                    log("retryFailedEvents Response Code: ${response.code()} Body: ${response.body()}")
                     if (response.isSuccessful) {
                         eventDao.deleteEventsByIds(listOf(eventEntity.id))
                     } else if (response.code() == 400) {
@@ -56,8 +55,7 @@ class EventRepository(context: Context) {
                         log("retryFailedEvents 上传失败")
                     }
                 } catch (e: Exception) {
-                    // 仍然失败，保留在本地
-                    // 可根据需要添加重试策略或日志记录
+                    log("retryFailedEvents上传事件失败: ${e.message}")
                 }
             }
         }

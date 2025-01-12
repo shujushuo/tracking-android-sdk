@@ -1,7 +1,5 @@
 package com.shujushuo.tracking.app
 
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -33,13 +31,13 @@ class TrackFragment : Fragment() {
         val channelid = view.findViewById<TextView>(R.id.channelid)
 
         appid.text = requireContext().getSharedPreferences("sdk_config", Context.MODE_PRIVATE)
-            .getString("appid","APPID")
+            .getString("appid", "APPID")
 
         baseUrl.text = requireContext().getSharedPreferences("sdk_config", Context.MODE_PRIVATE)
-            .getString("baseUrl","http://127.0.0.1:8090")
+            .getString("baseUrl", "http://127.0.0.1:8090")
 
         channelid.text = requireContext().getSharedPreferences("sdk_config", Context.MODE_PRIVATE)
-            .getString("channelid","DEFAULT")
+            .getString("channelid", "DEFAULT")
 
         view.findViewById<Button>(R.id.btn_initialize).setOnClickListener {
             requireContext().getSharedPreferences("sdk_config", Context.MODE_PRIVATE).edit()

@@ -8,6 +8,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import com.github.gzuliyujiang.oaid.DeviceIdentifier
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import kotlinx.coroutines.delay
 import java.util.Locale
 import java.util.TimeZone
@@ -156,6 +158,16 @@ object TrackingSdk {
     fun log(message: String) {
         if (loggingEnabled) {
             Log.d("TrackingSdk", message)
+        }
+    }
+
+    /**
+     * 内部日志记录方法
+     * @param event 日志信息
+     */
+    fun log(event: EventEntity) {
+        if (loggingEnabled) {
+            Log.d("TrackingSdk", GsonBuilder().setPrettyPrinting().create().toJson(event))
         }
     }
 
