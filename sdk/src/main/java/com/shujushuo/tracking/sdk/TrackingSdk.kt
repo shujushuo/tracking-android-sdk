@@ -8,7 +8,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import com.github.gzuliyujiang.oaid.DeviceIdentifier
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.shujushuo.tracking.sdk.DeviceInfoManager.Companion.KEY_INSTALL_ID
 import com.shujushuo.tracking.sdk.DeviceInfoManager.Companion.PREFS_NAME

@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinKapt)
     id("maven-publish")
 }
+val sdkVersion = "0.2.5"
 
 android {
     namespace = "com.shujushuo.tracking.sdk"
@@ -15,9 +16,6 @@ android {
 
     defaultConfig {
         minSdk = 22
-        // 手动定义版本号
-        val sdkVersion = "0.2"
-
         // 将版本号添加到 BuildConfig
         buildConfigField("String", "SDK_VERSION", "\"$sdkVersion\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -86,7 +84,7 @@ afterEvaluate {
                 from(components["release"]) // 引用 'release' 组件
                 groupId = "com.shujushuo.tracking" // 你的 groupId
                 artifactId = "tracking-android-sdk" // 你的 artifactId
-                version = "0.2" // 版本号
+                version = sdkVersion // 版本号
 
                 pom {
                     name.set("Tracking Android SDK")

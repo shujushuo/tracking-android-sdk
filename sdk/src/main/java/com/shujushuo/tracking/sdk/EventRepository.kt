@@ -47,8 +47,9 @@ class EventRepository(context: Context) {
                     val response = apiService.uploadEvent(eventEntity)
                     log("retryFailedEvents Response Code: ${response.code()} Body: ${response.body()}")
                     if (response.isSuccessful) {
+                        log("retryFailedEvents 上传成功")
                         eventDao.deleteEventsByIds(listOf(eventEntity.id))
-                    } else if (response.code() == 400) {
+                    } else if (response.code() in 300..499) {
                         // 如果code 等于400，说明上报的数据有问题。也应该清除本地数据
                         log("retryFailedEvents,数据异常，删除本地数据")
                         eventDao.deleteEventsByIds(listOf(eventEntity.id))
