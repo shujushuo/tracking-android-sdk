@@ -5,7 +5,7 @@ import com.shujushuo.tracking.sdk.TrackingSdk.log
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-class EventRepository(context: Context) {
+class EventRepository(context: Context, private var maxCacheSize: Int) {
 
     private val eventDao = AppDatabase.getDatabase(context).eventDao()
     private val apiService = RetrofitClient.apiService
@@ -34,12 +34,17 @@ class EventRepository(context: Context) {
     }
 
     private suspend fun saveEventLocally(event: EventEntity) {
-        eventDao.insert(event)
+        log("保存数据入库，最确保已存数据少于: $maxCacheSize")
+        eventDao.insertWithLimit(event, maxCacheSize)
+        log("当前已经积压数据: ${eventDao.getCount()}条")
     }
 
     suspend fun retryFailedEvents() {
         retryLock.withLock {
             val failedEvents = eventDao.getAllEvents()
+            if(failedEvents.isNotEmpty()){
+                log("flushAllEvent 上传所有数据")
+            }
             for (eventEntity in failedEvents) {
                 try {
                     log("retryFailedEvents,开始请求服务器")

@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.os.Build
 import android.util.Log
+import androidx.lifecycle.ProcessLifecycleOwner
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -16,60 +17,68 @@ import java.util.Locale
 import java.util.TimeZone
 
 object TrackingSdk {
+    private var initialized = false
 
     private lateinit var application: Application
     private lateinit var repository: EventRepository
     lateinit var deviceInfoManager: DeviceInfoManager
-    lateinit var appId: String
-    lateinit var channelId: String
-    lateinit var baseUrl: String
+    private lateinit var appId: String
+    private lateinit var channelId: String
+    private lateinit var baseUrl: String
+    private var maxCacheSize: Int = 100
     private var loggingEnabled: Boolean = false
 
+
     /**
      * 初始化 SDK
      * @param context 应用上下文
      * @param config SDK 配置信息
      */
-    fun initialize(app: Application, config: SdkConfig) {
-        this.initializeWithoutDefaultEvent(app, config)
-        val installId = this.application.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-            .getString(KEY_INSTALL_ID, null)
-        // 如果installid为null，证明是第一次安装，上报install
-        if (installId == null) {
-            log("第一次安装，上报install事件")
-            this.trackInstall()
-        } else {
-            log("非第一次安装，不上报install事件")
+    fun initialize(
+        app: Application, baseUrl: String,
+        appId: String,
+        channelId: String = "default"
+    ) {
+        if (initialized) return
+        synchronized(this) {
+            this.application = app
+            this.appId = appId
+            this.channelId = channelId
+            this.baseUrl = baseUrl
+            RetrofitClient.setBaseUrl(baseUrl)
+            log("上报地址已更新为: $baseUrl")
+
+            repository = EventRepository(app.applicationContext, maxCacheSize)
+            DeviceIdentifier.register(app)
+            deviceInfoManager = DeviceInfoManager()
+
+            log("SDK 初始化完成，Base URL: ${baseUrl}, App ID: $appId")
+
+            LifecycleObserver.register()
+
+            val installId = this.application.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                .getString(KEY_INSTALL_ID, null)
+            // 如果installid为null，证明是第一次安装，上报install
+            if (installId == null) {
+                log("第一次安装，上报install事件")
+                this.trackInstall()
+            } else {
+                log("非第一次安装，不上报install事件")
+            }
         }
-        this.trackStartup(3)
     }
 
-    /**
-     * 初始化 SDK
-     * @param context 应用上下文
-     * @param config SDK 配置信息
-     */
-    fun initializeWithoutDefaultEvent(app: Application, config: SdkConfig) {
-        this.application = app
-        appId = config.appId
-        channelId = config.channelId
-        baseUrl = config.baseUrl
-        RetrofitClient.setBaseUrl(baseUrl)
-        log("上报地址已更新为: $baseUrl")
-
-        repository = EventRepository(app.applicationContext)
-        DeviceIdentifier.register(app)
-        deviceInfoManager = DeviceInfoManager()
-
-        Scheduler.scheduleRetryFailedEvents(app.applicationContext)
-        log("SDK 初始化完成，Base URL: ${config.baseUrl}, App ID: ${config.appId}")
-
+    fun reset() {
+        synchronized(this) {
+            log("初始化SDK")
+            LifecycleObserver.unregister()
+            initialized = false
+        }
     }
 
 
     /**
      * 上报安装事件
-     * @param xcontext 事件上下文信息
      */
     fun trackInstall() {
         this.trackEvent(
@@ -151,6 +160,12 @@ object TrackingSdk {
     }
 
 
+    fun flushAllEvent() {
+        CoroutineScope(Dispatchers.IO).launch {
+            repository.retryFailedEvents();
+        }
+    }
+
     /**
      * 启用或禁用 SDK 日志
      * @param enabled 是否启用日志
@@ -159,6 +174,7 @@ object TrackingSdk {
         loggingEnabled = enabled
         log("日志功能已 ${if (enabled) "启用" else "禁用"}")
     }
+
 
     /**
      * 内部日志记录方法
@@ -212,4 +228,5 @@ object TrackingSdk {
         // 如果需要保留分钟偏移量，可以进行调整
         return String.format(Locale.getDefault(), "%+d", hours)
     }
+
 }

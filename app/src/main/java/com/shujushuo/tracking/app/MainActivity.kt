@@ -13,13 +13,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navView: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // 启用 SDK 日志
-        TrackingSdk.setLoggingEnabled(true)
-        // 正常接入，应该使用这个方法。
-        // TrackingSdk.initialize(
-        //     this.application,
-        //     SdkConfig("http://10.1.64.179:8090", "APPID", "DEFAULT")
-        // )
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main) // 确保布局文件名正确
 
