@@ -19,10 +19,6 @@ object LifecycleObserver : DefaultLifecycleObserver {
             ProcessLifecycleOwner.get().lifecycle.removeObserver(this)
     }
 
-    override fun onStart(owner: LifecycleOwner) {
-        TrackingSdk.trackStartup(30)
-    }
-
     override fun onStop(owner: LifecycleOwner) {
         super.onStop(owner)
         TrackingSdk.log("onStop")

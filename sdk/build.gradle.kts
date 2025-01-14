@@ -42,7 +42,6 @@ android {
 }
 
 dependencies {
-    implementation(libs.kezong.fat.aar)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -70,7 +69,7 @@ dependencies {
     // WorkManager 依赖
     implementation(libs.work.runtime.ktx)
     implementation(libs.hms.ads.identifier) //华为
-    implementation("com.hihonor.mcs:ads-identifier:1.0.3.300") //荣耀
+    implementation(libs.mcs.ads.identifier) //荣耀
     // OAID
     api(libs.oaid)
 }

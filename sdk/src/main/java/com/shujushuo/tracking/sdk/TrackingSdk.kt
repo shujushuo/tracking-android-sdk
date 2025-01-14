@@ -4,24 +4,26 @@ import android.app.Application
 import android.content.Context
 import android.os.Build
 import android.util.Log
-import androidx.lifecycle.ProcessLifecycleOwner
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.github.gzuliyujiang.oaid.DeviceID
 import com.github.gzuliyujiang.oaid.DeviceIdentifier
+import com.github.gzuliyujiang.oaid.IGetter
 import com.google.gson.GsonBuilder
 import com.shujushuo.tracking.sdk.DeviceInfoManager.Companion.KEY_INSTALL_ID
 import com.shujushuo.tracking.sdk.DeviceInfoManager.Companion.PREFS_NAME
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.Locale
 import java.util.TimeZone
+
 
 object TrackingSdk {
     private var initialized = false
 
     private lateinit var application: Application
     private lateinit var repository: EventRepository
-    var deviceInfoManager: DeviceInfoManager = DeviceInfoManager()
+    lateinit var deviceInfoManager: DeviceInfoManager
     private lateinit var appId: String
     private lateinit var channelId: String
     private lateinit var baseUrl: String
@@ -45,26 +47,42 @@ object TrackingSdk {
             this.appId = appId
             this.channelId = channelId
             this.baseUrl = baseUrl
+
             RetrofitClient.setBaseUrl(baseUrl)
             log("上报地址已更新为: $baseUrl")
 
             repository = EventRepository(app.applicationContext, maxCacheSize)
-            DeviceIdentifier.register(app)
+            deviceInfoManager = DeviceInfoManager()
 
             log("SDK 初始化完成，Base URL: ${baseUrl}, App ID: $appId")
-
             LifecycleObserver.register()
 
-            val installId = this.application.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .getString(KEY_INSTALL_ID, null)
-            // 如果installid为null，证明是第一次安装，上报install
-            if (installId == null) {
-                log("第一次安装，上报install事件")
-                this.trackInstall()
-            } else {
-                log("非第一次安装，不上报install事件")
-            }
+            DeviceID.getOAID(this.application, object : IGetter {
+                override fun onOAIDGetComplete(oaid: String) {
+                    log("OAID:${oaid}")
+                    firstInstall(oaid)
+                }
+
+                override fun onOAIDGetError(error: Exception) {
+                    log("OAID:获取OAID失败")
+                    firstInstall(null)
+                }
+            })
         }
+    }
+
+    private fun firstInstall(oaid: String?) {
+        val installId = this.application.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getString(KEY_INSTALL_ID, null)
+        // 如果installid为null，证明是第一次安装，上报install
+        deviceInfoManager.setOAID(this.application, oaid)
+        if (installId == null) {
+            log("第一次安装，上报install事件")
+            this.trackInstall()
+        } else {
+            log("非第一次安装，不上报install事件")
+        }
+        trackStartup(30)
     }
 
     fun reset() {
@@ -79,9 +97,10 @@ object TrackingSdk {
     /**
      * 上报安装事件
      */
-    fun trackInstall() {
+    fun trackInstall(delayMs: Long = 0) {
         this.trackEvent(
             "install",
+            delayMs = delayMs
         )
     }
 
@@ -141,7 +160,7 @@ object TrackingSdk {
                 delay(delayMs) // 延迟指定毫秒数
             }
 
-            val defaultXContext = createDefaultXContext(application.applicationContext)
+            val defaultXContext = createDefaultXContext(application)
 
             val combinedXContext = defaultXContext + parameters
 
@@ -199,8 +218,8 @@ object TrackingSdk {
      * 创建默认的 XContext
      * 这里可以根据实际情况填充默认值或从设备获取相关信息
      */
-    private fun createDefaultXContext(context: Context): Map<String, Any?> {
-        val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+    private fun createDefaultXContext(app: Application): Map<String, Any?> {
+        val packageInfo = app.packageManager.getPackageInfo(app.packageName, 0)
         val pkgVersion = packageInfo.versionName ?: "unknown"
         val pkgName = packageInfo.packageName
         return mapOf(
@@ -209,10 +228,10 @@ object TrackingSdk {
             "platform" to "android",
             "brand" to Build.BRAND,
             "model" to Build.MODEL,
-            "oaid" to deviceInfoManager.getOAID(context),
-            "androidid" to deviceInfoManager.getAndroidId(context),
+            "oaid" to deviceInfoManager.getOAID(app),
+            "androidid" to deviceInfoManager.getAndroidId(app),
             "tz" to getTimeZoneOffset(),
-            "installid" to deviceInfoManager.getInstallId(context),
+            "installid" to deviceInfoManager.getInstallId(app),
             "channelid" to this.channelId,
             "pkg_name" to pkgName,
             "pkg_version" to pkgVersion,

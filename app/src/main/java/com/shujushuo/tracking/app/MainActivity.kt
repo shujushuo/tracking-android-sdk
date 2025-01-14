@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.shujushuo.tracking.sdk.SdkConfig
 import com.shujushuo.tracking.sdk.TrackingSdk
 
 class MainActivity : AppCompatActivity() {
