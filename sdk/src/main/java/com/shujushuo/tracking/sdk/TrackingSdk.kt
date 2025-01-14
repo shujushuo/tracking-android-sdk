@@ -21,7 +21,7 @@ object TrackingSdk {
 
     private lateinit var application: Application
     private lateinit var repository: EventRepository
-    lateinit var deviceInfoManager: DeviceInfoManager
+    var deviceInfoManager: DeviceInfoManager = DeviceInfoManager()
     private lateinit var appId: String
     private lateinit var channelId: String
     private lateinit var baseUrl: String
@@ -50,7 +50,6 @@ object TrackingSdk {
 
             repository = EventRepository(app.applicationContext, maxCacheSize)
             DeviceIdentifier.register(app)
-            deviceInfoManager = DeviceInfoManager()
 
             log("SDK 初始化完成，Base URL: ${baseUrl}, App ID: $appId")
 
