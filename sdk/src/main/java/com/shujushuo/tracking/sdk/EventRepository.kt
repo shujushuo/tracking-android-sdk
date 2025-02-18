@@ -19,11 +19,9 @@ class EventRepository(context: Context, private var maxCacheSize: Int) {
         try {
             val response = apiService.uploadEvent(event)
             log("Response Code: ${response.code()} Body: ${response.body()}")
-            if (response.code() !in 200..299) {
+            if (response.code() >= 500) {
                 log("上传失败，保存到本地")
                 saveEventLocally(event)
-            } else if (response.code() in 300..499) {
-                log("上传失败，但因为数据参数错误，不保存到本地")
             } else {
                 log("上传成功")
             }
@@ -42,7 +40,7 @@ class EventRepository(context: Context, private var maxCacheSize: Int) {
     suspend fun retryFailedEvents() {
         retryLock.withLock {
             val failedEvents = eventDao.getAllEvents()
-            if(failedEvents.isNotEmpty()){
+            if (failedEvents.isNotEmpty()) {
                 log("flushAllEvent 上传所有数据")
             }
             for (eventEntity in failedEvents) {

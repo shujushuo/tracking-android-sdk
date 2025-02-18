@@ -31,10 +31,10 @@ class TrackFragment : Fragment() {
         val channelid = view.findViewById<TextView>(R.id.channelid)
 
         appid.text = requireContext().getSharedPreferences("sdk_config", Context.MODE_PRIVATE)
-            .getString("appid", "APPID")
+            .getString("appid", "200_1165")
 
         baseUrl.text = requireContext().getSharedPreferences("sdk_config", Context.MODE_PRIVATE)
-            .getString("baseUrl", "http://127.0.0.1:8090")
+            .getString("baseUrl", "https://tracking.wdyxgames.com/")
 
         channelid.text = requireContext().getSharedPreferences("sdk_config", Context.MODE_PRIVATE)
             .getString("channelid", "DEFAULT")
